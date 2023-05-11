@@ -1,0 +1,392 @@
+{% extends 'frontend/layout.html' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='frontend/main.css') }}">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='frontend/css/main.css') }}"> -->
+
+    <style>
+      .market-history table,
+      .market-history tr,
+      .market-history td,
+      .market-history th {
+          width: auto;
+          table-layout: fixed;
+      }
+      .market-order {
+          border-top: 0;
+          min-height: 100px;
+          border: 1px solid #e0e3eb;
+          border-radius: 2px;
+      }
+      #orderValues td{
+        width: 150px;
+        text-align: center;
+      }
+
+      #orderTitles th{
+        width: 150px;
+        text-align: center;
+      }
+
+      .buy{
+        background: #26de81;
+      }
+
+      .sell{
+        background: #ff231f;
+      }
+
+      .signal{
+        background: #098bb3;
+      }
+      
+    </style>
+
+{% endblock styles %}
+
+
+
+{% block main_content %}
+
+<div class="container-fluid mtb15 no-fluid">
+  <div class="row sm-gutters">
+    <div class="col-md-3">
+
+      <div class="market-pairs">         
+        <a class="nav-link active" style="padding-top: 0px; margin-left: 5px;">Pair</a>                
+        <div class="input-group">
+        <select  id="symbol_backtest" class="custom-select" style="margin-bottom: 8px; background-color: #2a2e39;border: 1px solid #2a2e39;color: #ffffff;">
+          <option selected>BTCUSDT</option>
+          <option>ETHUSDT</option>
+          <option>BNBUSDT</option>
+          <option>ADAUSDT</option>
+          <option>COTIUSDT</option>
+          <option>LTCUSDT</option>
+          <option>SOLUSDT</option>
+          <option>XRPUSDT</option>
+          <option>BCHUSDT</option>
+          <option>MATICUSDT</option>
+          <option>HBARUSDT</option>
+          <option>KSMUSDT</option>
+          <option>STMXUSDT</option>
+        </select>
+      </div>
+        
+      </div>
+
+      <div class="market-trade mt15">
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="pill" href="#pills-trade-limit" role="tab"
+              aria-selected="true">Simulation Info</a>
+          </li>
+        </ul>
+
+        <div class="tab-content"  style="height: auto;">
+          <div class="tab-pane fade show active" id="pills-trade-limit" role="tabpanel">
+            <div class="d-flex justify-content-between">
+              <div class="market-trade-buy">
+                <!-- <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Price" value="Pair" readonly style="color:#16cfed;;">
+                  <div class="input-group-append">
+                    <span class="input-group-text">BTCUSDT</span>
+                  </div>
+                </div> -->
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Amount" value="Timeframe" readonly style="color:#16cfed;;">
+                  <div class="input-group-append">
+                    <span id="timeframe_backtest" class="input-group-text">1d</span>
+                  </div>
+                </div>
+                <h3 style="display: none;" id="time2">{{ timeframe1 }}</h3>
+                <ul class="market-trade-list" style="margin-bottom: 8px;">
+                  <li onclick="changeTimeframe('1d')"><a href="#!">D</a></li>
+                  <li onclick="changeTimeframe('6h')"><a href="#!">6Hr</a></li>
+                  <li onclick="changeTimeframe('4h')"><a href="#!">4Hr</a></li>
+                  <li onclick="changeTimeframe('1h')"><a href="#!">1Hr</a></li>
+                </ul>
+                <select id="date_backtest" class="custom-select" style="margin-bottom: 8px; background-color: #2a2e39;border: 1px solid #2a2e39;color: #ffffff;">
+                  <option selected>November 2019</option>
+                  <option>May 2021</option>
+                  <option>December 2021</option>
+                </select>
+                <p>Available: <span>0 BTC = 0 USD</span></p>
+              
+                <button id="simulateBtn" onclick="playPrice2()" class="btn buy" style="margin-top: 10px;">Simulate</button>
+                <div id="playControl" style="display: none;">
+                  <button id="pauseBtn" onclick="playPause()" class="btn buy" style="margin-top: 10px;">Pause</button>
+                  <button id="resumeBtn" style="display: none; margin-top: 10px;" onclick="resumePause()" class="btn buy">Resume</button>
+                
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="market-pairs mt15">
+
+        <ul class="market-trade-list" style="width: 100%; display: flex;justify-content: center;margin-top: 20px;">
+          <li><a id="atr_update" href="#!" style="padding: 10px 20px;background: #90870c;box-shadow: 0px 0px 15px 0px #bdba2e6f;">455 - x5.33</a></li>
+          
+          <li><a id="price_update" href="#!" style="padding: 10px 20px;background: #058a47;box-shadow: 0px 0px 15px 0px #03b45bad;">8534.88</a></li>
+      
+        </ul>
+        <ul class="market-trade-list" style="width: 100%; display: flex;justify-content: center;margin-top: 20px;margin-bottom: 28px;">
+        
+          <li><a id="time_update_realtime" href="#!" style="padding: 10px 20px;background: #0e4c6f;box-shadow: 0px 0px 15px 0px #0c62a96f;">1 March, 2022 | 1:00</a></li>     
+        </ul>
+
+      </div>
+    
+    </div>
+    <div class="col-md-9">
+      <div class="main-chart">
+        <!-- TradingView Widget BEGIN -->
+        <div class="tradingview-widget-container">
+          <div id="tradingview_e8053" style="min-height: 500px;">
+            <div>
+              <div id="chart0" style="position: relative; width: 100%; margin: 0px auto;"></div>    
+              
+              <div id="chart" style="display: none; position: relative; width: 100%; margin: 0px auto;"></div>
+  
+              <div id="chart2" style="display: none; position: relative; width: 100%; margin: 0px auto;"></div>
+  
+              <div id="chart3" style="display: none; position: relative; width: 100%; margin: 0px auto;"></div>
+  
+              <div id="chart4" style="display: none; position: relative; width: 100%; margin: 0px auto;"></div>
+  
+              <div id="chart0Data" style="display: none;">Open</div>
+              <div id="chartData" style="display: none;">Open</div>
+              <div id="chart2Data" style="display: none;">Open</div> 
+              <div id="chart3Data" style="display: none;">Open</div>
+              <div id="chart4Data" style="display: none;">Open</div> 
+  
+              <div id="switch"></div>
+          
+          </div>
+          
+
+        <div class="fast_emaline_output" style="display: none;"></div>
+          </div>
+        </div>
+        <!-- TradingView Widget END -->
+      </div>
+    
+    </div>
+  </div>
+  <div class="row sm-gutters">
+    <div class="col-md-12">
+      <div class="market-history market-order mt15">
+        <ul class="nav nav-pills" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="pill" href="#open-orders" role="tab" aria-selected="true">Open
+              Orders</a>
+          </li>          
+        </ul>
+        <div class="tab-content" style="height: auto;">
+          <div class="tab-pane fade show active" id="open-orders" role="tabpanel">             
+            <table class="table table-striped" style="margin: 0px auto;">
+              <thead style="text-align: center;">
+                <tr id="orderTitles">
+                  <th>Pair</th>
+                  <th>Order Type</th>
+                  <th>Size(Lot)</th>
+                  <th>Entry Price</th>
+                  <th>Stop Loss</th>
+                  <th>Take Profit</th>
+                  <th>Profit/Loss</th>
+                </tr>
+              </thead>
+              <tbody style="height: 40px;border-bottom: 2px solid;margin-bottom: 0px;">
+                <tr id="orderValues" style="background: #292e3b;">
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td class="green"></td>
+                </tr>               
+              </tbody>
+            </table>
+
+          
+            <ul class="market-trade-list" style="width: 100%; display: flex;justify-content: center;margin-top: 20px;">
+              <li><a onclick="tradeMode()"  class="tradeModeBtn2" style="padding: 10px 20px;background: #993212; cursor: pointer;">Close Trade</a></li>
+              <li><a onclick="tradeModeEMA()" class="tradeModeBtn3" style="padding: 10px 20px;background: #993212; cursor: pointer;">Close Trade EMA</a></li>
+            </ul>
+
+            
+            
+          </div>
+        </div>
+      </div>
+    </div>  
+      <div class="col-md-3">
+        <div class="market-trade mt15">
+          <ul class="nav nav-pills" role="tablist" style="background: #1c2030;padding-bottom: 7px;">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="pill" href="#pills-trade-limit" role="tab"
+                aria-selected="true">Limit</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="pills-trade-limit" role="tabpanel">
+              <div style="width: 100%; display: flex;">
+                <div id="longSignal" class="signal" style="text-align: center; margin: auto;color: #fff;text-transform: uppercase;padding: 10px;width: 200px;border: none;border-radius: 5px;margin-bottom: 10px;">Trade Signal</div>
+              </div>
+                <div class="signalShow" style="display: none;"></div>
+                <div class="tradeEntry" style="display: none;"></div>
+                <div class="tradeExit" style="display: none;"></div>
+              <div class="input-group" style="margin-bottom: 10px;">
+                <input id="orderEntry" type="text" class="form-control" placeholder="Order Entry" readonly>
+              
+              </div>
+              <p style="width: 180px;margin: auto;margin-bottom: 15px;background: #000;padding: 5px 15px;border-radius: 5px;">Stake: <span id="atrBox">00.0</span></p>
+              <div class="d-flex justify-content-between">
+                <div class="market-trade-buy">                
+                  <div class="input-group">
+                    <input id="Takeprofit" type="text" class="form-control" placeholder="Take Profit" readonly>
+                  
+                  </div>
+                  <ul class="market-trade-list">
+                    <li><a id="profitDiffBox" href="#!" style="padding: 5px 20px;">250</a></li>
+                    <li style="float: right;"><a id="profitBox" href="#!" style="background: rgb(8, 138, 73);padding: 5px 5px;">50%</a></li>
+                  </ul>
+                  
+                  <button onclick="longTrade()" class="btn buy">Buy</button>
+                </div>
+
+
+                <div class="market-trade-sell">                
+                  <div class="input-group">
+                    <input id="stopLoss" type="number" class="form-control" placeholder="Stop Loss" readonly>
+                    
+                  </div>
+                  <ul class="market-trade-list">
+                    <li><a id="lossDiffBox" href="#!" style="padding: 5px 20px;">280</a></li>
+                    <li style="float: right;"><a id="lossBox" href="#!" style="background: rgb(134, 33, 7);padding: 5px 5px;">50%</a></li>
+                  </ul>
+                 
+                  <button onclick="shortTrade()" class="btn sell">Sell</button>
+                </div>
+              </div>
+            </div>            
+          </div>
+        </div>
+        
+      </div>
+      <div class="col-md-9">
+        
+        <div class="market-history market-order mt15">
+          <ul class="nav nav-pills" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="pill" href="#trade_details_tab" role="tab" aria-selected="true">Open
+                Trade History 1x</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="pill" href="#trade_details_tab_2" role="tab" aria-selected="false">Open
+                Trade History 3x</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="pill" href="#trade_details_tab_3" role="tab" aria-selected="false">Open
+                Trade History 10x</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade active show" id="trade_details_tab" role="tabpanel">
+              <table id="trade_detailss" class="table table-striped" style="margin: 0px auto;">
+                <thead style="text-align: center;">
+                  <tr>
+                    <th>No</th>
+                    <th style="width: 150px;">Open</th>
+                    <th style="width: 150px;text-align: center;">Close</th>
+                    <th style="width: 200px;text-align: center;">Open Time</th>
+                    <th style="width: 200px;text-align: center;">Close Time</th>
+                    <th style="width: 150px;text-align: center;">Balance</th>
+                    <th>Outcome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                    
+                </tbody>
+              </table>
+              
+            </div>
+
+            <div class="tab-pane fade" id="trade_details_tab_2" role="tabpanel">
+              <table id="trade_detailssx3" class="table table-striped" style="margin: 0px auto;">
+                <thead style="text-align: center;">
+                  <tr>
+                    <th>No</th>
+                    <th style="width: 150px;">Open</th>
+                    <th style="width: 150px;text-align: center;">Close</th>
+                    <th style="width: 200px;text-align: center;">Open Time</th>
+                    <th style="width: 200px;text-align: center;">Close Time</th>
+                    <th style="width: 100px;text-align: center;">Balance</th>
+                    <th>Outcome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                    
+                </tbody>
+              </table>
+              
+            </div>
+
+            <div class="tab-pane fade" id="trade_details_tab_3" role="tabpanel">
+              <table id="trade_detailssx10" class="table table-striped" style="margin: 0px auto;">
+                <thead style="text-align: center;">
+                  <tr>
+                    <th>No</th>
+                    <th style="width: 150px;">Open</th>
+                    <th style="width: 150px;text-align: center;">Close</th>
+                    <th style="width: 200px;text-align: center;">Open Time</th>
+                    <th style="width: 200px;text-align: center;">Close Time</th>
+                    <th style="width: 100px;text-align: center;">Balance</th>
+                    <th>Outcome</th>
+                  </tr>
+                </thead>
+                <tbody>
+                                   
+                </tbody>
+              </table>
+              
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      
+      
+    </div>
+  </div>
+
+  <div class="pausePlay" style="display: none;">0</div>
+        <div class="resumePlay" style="display: none;">0</div>
+        <div class="resetPlay" style="display: none;">0</div>
+        <div class="Tradebal" style="display: none;">100</div>
+        <div class="Tradebalx3" style="display: none;">100</div>
+        <div class="Tradebalx10" style="display: none;">100</div>
+        <div class="TradeMode" style="display: none;">1</div>
+        <div class="TradeModeEMA" style="display: none;">1</div>
+        <div class="tradeTransactMode" style="display: none;">0</div>
+        <div class="tradeTransactx3" style="display: none;">0</div>
+        <div class="tradeTransact" style="display: none;">0</div>
+        <div id="time_update" style="display: none;">0</div>
+        <div id="time_updatex3" style="display: none;">0</div>
+        
+
+{% endblock main_content %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='frontend/jquery-1.10.2.js') }}"></script>
+  <script src="{{ url_for('static', filename='frontend/lightweightchart3.8.js') }}"></script>
+  <!-- <script src="{{ url_for('static', filename='frontend/lightweightchart.js') }}"></script> -->
+  <!-- <script src="{{ url_for('static', filename='frontend/all_chartz.js') }}"></script> -->
+  <!-- <script src="{{ url_for('static', filename='frontend/chart_simulate.js') }}"></script> -->
+  <script src="{{ url_for('static', filename='/frontend/chart_simulate_chandelier_all_tmfrm.js') }}"></script>
+  
+{% endblock scripts %}

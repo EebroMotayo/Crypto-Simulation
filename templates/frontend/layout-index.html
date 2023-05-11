@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Crypo</title>
+  <link rel="icon" href="{{ url_for('static', filename='/frontend/assets/img/favicon.png') }}" type="image/x-icon">
+  <link rel="stylesheet" href="{{ url_for('static', filename='/frontend/assets/css/style.css') }}">
+</head>
+
+<body id="dark">
+
+
+
+     {% block main_content %}{% endblock main_content %}
+
+
+    <script src="{{ url_for('static', filename='/frontend/assets/js/jquery-3.4.1.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/frontend/assets/js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/frontend/assets/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/frontend/assets/js/amcharts-core.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/frontend/assets/js/amcharts.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='/frontend/assets/js/jquery.mCustomScrollbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='/frontend/assets/js/custom.js') }}"></script>
+    <script>
+      // $('tbody, .market-news ul').mCustomScrollbar({
+      //   theme: 'minimal',
+      // });
+    </script>
+  </body>
+  
+  
+  </html>    
