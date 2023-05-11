@@ -32,8 +32,8 @@ from math import *
 
 app = Flask(__name__)
 
-API_KEY = 'LkNaYrW2LiGa915piUb76LicE6WukymRTRRhWWkeseJHmQWekiqWBZqibBXGo8d3'
-API_SECRET = 'AqzVVCThp4sF6cqEKHP3mdRpBIBq83ibOFwylK3OSTzM1Inz39QI9mkGu0fv2kmm'
+API_KEY = 'tna1KBDBfE5Yzr7WbbBebKo9qhg4KSjZTu68yGyz4Szhw72y6TqidAL8qp3wdpGT'
+API_SECRET = 'G9QNHFsgCvLyI8T4ObNMo6HHniP5w6BZF3is1klrB1yfmraTl3zAukh36zGbj5Ur'
 TELEGRAM_TOKEN = '5200113689:AAFLRoGo4Bn46Pb3cJYqDfhSQVfY3MZfnfE' # telegram bot token
 TELEGRAM_CHANNEL ='1137106976' # channel id
 
